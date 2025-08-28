@@ -13,3 +13,88 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id            Int      @id @default(autoincrement())
+  username      String   @unique
+  email         String   @unique
+  password_hash String
+  created_at    DateTime @default(now())
+
+  // Relations
+  progress UserQuestionProgress[]
+
+  @@map("users")
+}
+
+model Sheet {
+  id            Int      @id @default(autoincrement())
+  name          String
+  has_sub_steps Boolean  @default(false)
+  created_at    DateTime @default(now())
+
+  // Relations
+  sheet_questions SheetQuestion[]
+
+  @@map("sheets")
+}
+
+model Question {
+  id                         Int      @id @default(autoincrement())
+  problem_id                 String   @unique
+  problem_name               String
+  company_tags               Json?
+  leetcode_link              String?
+  gfg_link                   String?
+  code360_link               String?
+  tuf_article                String?
+  tuf_yt_video_link          String?
+  tuf_link                   String?
+  difficulty                 Float?
+  leetcode_description       String?
+  leetcode_premium_question  Boolean?
+  created_at                 DateTime @default(now())
+
+  // Relations
+  sheet_questions SheetQuestion[]
+  user_progress   UserQuestionProgress[]
+
+  @@map("questions")
+}
+
+model SheetQuestion {
+  id              Int      @id @default(autoincrement())
+  sheet_id        Int
+  question_id     Int
+  step_number     Int
+  sub_step_number Int?
+  sr_no           Int?
+  topic           String?
+  sub_topic       String?
+  created_at      DateTime @default(now())
+
+  // Relations
+  sheet    Sheet    @relation(fields: [sheet_id], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [question_id], references: [id], onDelete: Cascade)
+
+  @@unique([sheet_id, question_id], name: "unique_sheet_question")
+  @@map("sheet_questions")
+}
+
+model UserQuestionProgress {
+  id           Int       @id @default(autoincrement())
+  user_id      Int
+  question_id  Int
+  is_done      Boolean   @default(false)
+  personal_note String?
+  completed_at DateTime?
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+
+  // Relations
+  user     User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [question_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, question_id], name: "unique_user_question")
+  @@map("user_question_progress")
+}
