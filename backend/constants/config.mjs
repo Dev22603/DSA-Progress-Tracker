@@ -4,7 +4,7 @@ dotenv.config();
 export const config = {
 	// Application Environment
 	PORT: process.env.PORT || 5000,
-
+	NODE_ENV: process.env.NODE_ENV || "development",
 	// API and Database URLs
 	API_URL: process.env.API_URL || `http://localhost:${process.env.PORT}/api`,
 	DB_USER: process.env.DB_USER || "postgres",
