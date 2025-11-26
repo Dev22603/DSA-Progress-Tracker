@@ -5,12 +5,17 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon index.mjs"
+    "dev": "nodemon index.mjs",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio",
+    "prisma:push": "prisma db push"
   },
   "author": "Dev Bachani",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@prisma/adapter-pg": "^6.15.0",
     "@prisma/client": "^6.15.0",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",

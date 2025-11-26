@@ -1,13 +1,21 @@
 import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import pg from "pg";
 import { config } from "../constants/config.mjs";
+
 const globalForPrisma = globalThis;
 
-const prisma =
-	globalForPrisma.prisma ||
-	new PrismaClient({
+const createPrismaClient = () => {
+	const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
+	const adapter = new PrismaPg(pool);
+
+	return new PrismaClient({
+		adapter,
 		log: ["query", "info", "warn", "error"],
-		datasources: { db: { url: process.env.DATABASE_URL } },
 	});
+};
+
+const prisma = globalForPrisma.prisma || createPrismaClient();
 
 if (config.NODE_ENV !== "production") {
 	globalForPrisma.prisma = prisma;
