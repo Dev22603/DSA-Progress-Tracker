@@ -1,14 +1,13 @@
-import { useState } from 'react'
-import './App.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-
+import Home from './pages/Home'
+import DSASheets from './pages/DSASheets'
+import DSASheetTracker from './pages/DSASheetTracker'
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
    <BrowserRouter>
    <Routes>
-    <Route path="/" element={<Home />} />
+    <Route path="/resources/master/admin/en" element={<Home />} />
     <Route path="/DSA_Sheets" element={<DSASheets />} />
     <Route path="/DSA_Sheets/:id" element={<DSASheetTracker />} />
    </Routes>
