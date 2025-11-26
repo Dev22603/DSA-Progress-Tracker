@@ -1,4 +1,4 @@
-import { prisma } from '../prisma/client.js';
+import { prisma } from '../prisma/client.mjs';
 
 /**
  * Saves a new user to the database

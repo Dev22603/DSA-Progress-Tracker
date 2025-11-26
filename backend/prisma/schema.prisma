@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  // output   = "../generated/prisma"
 }
 
 datasource db {
@@ -40,20 +40,20 @@ model Sheet {
 }
 
 model Question {
-  id                         Int      @id @default(autoincrement())
-  problem_id                 String   @unique
-  problem_name               String
-  company_tags               Json?
-  leetcode_link              String?
-  gfg_link                   String?
-  code360_link               String?
-  tuf_article                String?
-  tuf_yt_video_link          String?
-  tuf_link                   String?
-  difficulty                 Float?
-  leetcode_description       String?
-  leetcode_premium_question  Boolean?
-  created_at                 DateTime @default(now())
+  id                        Int      @id @default(autoincrement())
+  problem_id                String   @unique
+  problem_name              String
+  company_tags              Json?
+  leetcode_link             String?
+  gfg_link                  String?
+  code360_link              String?
+  tuf_article               String?
+  tuf_yt_video_link         String?
+  tuf_link                  String?
+  difficulty                Float?
+  leetcode_description      String?
+  leetcode_premium_question Boolean?
+  created_at                DateTime @default(now())
 
   // Relations
   sheet_questions SheetQuestion[]
@@ -82,14 +82,14 @@ model SheetQuestion {
 }
 
 model UserQuestionProgress {
-  id           Int       @id @default(autoincrement())
-  user_id      Int
-  question_id  Int
-  is_done      Boolean   @default(false)
+  id            Int       @id @default(autoincrement())
+  user_id       Int
+  question_id   Int
+  is_done       Boolean   @default(false)
   personal_note String?
-  completed_at DateTime?
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @updatedAt
+  completed_at  DateTime?
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
 
   // Relations
   user     User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
