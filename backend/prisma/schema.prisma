@@ -15,9 +15,11 @@ datasource db {
 
 model User {
   id            Int      @id @default(autoincrement())
-  username      String   @unique
+  first_name    String
+  last_name     String
   email         String   @unique
   password_hash String
+  role          String   @default("user")
   created_at    DateTime @default(now())
 
   // Relations
