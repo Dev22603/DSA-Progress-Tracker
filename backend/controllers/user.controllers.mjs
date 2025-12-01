@@ -17,7 +17,7 @@ const signup = async (req, res) => {
 			message: validationResult.message,
 		});
 	}
-	const { first_name, last_name, email, phone_number, password } =
+	const { first_name, last_name, email, phone_number, password,role } =
 		validationResult.data;
 	try {
 		const result = await checkUserExists(email);
@@ -37,6 +37,7 @@ const signup = async (req, res) => {
 			last_name,
 			email,
 			phone_number,
+			role,
 			password: hashedPassword,
 		});
 
