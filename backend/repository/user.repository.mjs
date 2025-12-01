@@ -38,4 +38,15 @@ const checkUserExists = async (email) => {
     select: { id: true }
   });
 };
-export { saveUser, getUserById, getUserByEmail, checkUserExists };
+
+/**
+ * Gets all users from the database
+ */
+const getUsers = async () => {
+  return await prisma.user.findMany({
+    select: { id: true, first_name: true, last_name: true, email: true, role: true, created_at: true },
+    orderBy: { created_at: 'desc' }
+  });
+};
+
+export { saveUser, getUserById, getUserByEmail, checkUserExists, getUsers };

@@ -8,6 +8,7 @@ import {
 	checkUserExists,
 	saveUser,
 	getUserByEmail,
+	getUsers,
 } from "../repository/user.repository.mjs";
 // better signup
 const signup = async (req, res) => {
@@ -121,6 +122,22 @@ const login = async (req, res) => {
 	}
 };
 
-const getAllUsers = async (req, res) => {};
+const getAllUsers = async (req, res) => {
+	try {
+		const users = await getUsers();
 
+		return res.status(HTTP_STATUS.OK).json({
+			status: HTTP_STATUS.OK,
+			message: "Users retrieved successfully",
+			data: users,
+		});
+	} catch (error) {
+		console.error(error);
+		return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+			status: HTTP_STATUS.INTERNAL_SERVER_ERROR,
+			message: MESSAGES.SERVER_ERROR,
+			error: error.message,
+		});
+	}
+};
 export { signup, login, getAllUsers };
