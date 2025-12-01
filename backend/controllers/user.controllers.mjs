@@ -17,7 +17,7 @@ const signup = async (req, res) => {
 			message: validationResult.message,
 		});
 	}
-	const { first_name, last_name, email, phone_number, password,role } =
+	const { first_name, last_name, email, password, role } =
 		validationResult.data;
 	try {
 		const result = await checkUserExists(email);
@@ -36,7 +36,6 @@ const signup = async (req, res) => {
 			first_name,
 			last_name,
 			email,
-			phone_number,
 			role,
 			password: hashedPassword,
 		});
@@ -48,7 +47,6 @@ const signup = async (req, res) => {
 				id: newUser.id,
 				name: newUser.name,
 				email: newUser.email,
-				phone_number: newUser.phone_number,
 			},
 		});
 	} catch (error) {
@@ -96,7 +94,6 @@ const login = async (req, res) => {
 				email: user.email,
 				first_name: user.first_name,
 				last_name: user.last_name,
-				phone_number: user.phone_number,
 				// role: user.role,
 				// tenantId: user.tenantId,
 			},
@@ -113,7 +110,6 @@ const login = async (req, res) => {
 				first_name: user.first_name,
 				last_name: user.last_name,
 				email: user.email,
-				phone_number: user.phone_number,
 				// role: user.role,
 				// tenantId: user.tenantId,
 			},

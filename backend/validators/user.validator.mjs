@@ -12,12 +12,6 @@ const UserSignupSchema = z.object({
 		.min(2, "Name must be at least 2 characters long")
 		.max(100, "Name must be at most 100 characters long"),
 	email: z.email().transform((val) => val.toLowerCase()),
-	phone_number: z
-		.string()
-		.regex(
-			REGEX.PHONE,
-			"Phone number must be 10 digits and cannot start with 0"
-		),
 	password: z
 		.string()
 		.min(8, "Password must be at least 8 characters long")
