@@ -2,7 +2,8 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { validateUserSignup, validateUserLogin } from "../validators/user.validator.mjs";
-import { HTTP_STATUS, MESSAGES } from "../constants/constants.mjs";
+import { HTTP_STATUS, MESSAGES, AUTH } from "../constants/constants.mjs";
+import { config } from "../constants/config.mjs";
 import {
 	checkUserExists,
 	saveUser,
@@ -37,7 +38,7 @@ const signup = async (req, res) => {
 			last_name,
 			email,
 			role,
-			password: hashedPassword,
+			password_hash: hashedPassword,
 		});
 
 		res.status(201).json({
@@ -79,7 +80,7 @@ const login = async (req, res) => {
 			});
 		}
 
-		const isMatch = await bcrypt.compare(password, user.password);
+		const isMatch = await bcrypt.compare(password, user.password_hash);
 		if (!isMatch) {
 			return res.status(400).json({
 				status: HTTP_STATUS.BAD_REQUEST,
@@ -90,12 +91,11 @@ const login = async (req, res) => {
 
 		const token = jwt.sign(
 			{
-				userId: user._id,
+				userId: user.id,
 				email: user.email,
 				first_name: user.first_name,
 				last_name: user.last_name,
-				// role: user.role,
-				// tenantId: user.tenantId,
+				role: user.role,
 			},
 			config.JWT_SECRET,
 			{ expiresIn: AUTH.ACCESS_TOKEN_EXPIRY }
@@ -106,12 +106,11 @@ const login = async (req, res) => {
 			message: "Login successful",
 			data: {
 				token,
-				userId: user._id,
+				userId: user.id,
 				first_name: user.first_name,
 				last_name: user.last_name,
 				email: user.email,
-				// role: user.role,
-				// tenantId: user.tenantId,
+				role: user.role,
 			},
 		});
 	} catch (error) {
