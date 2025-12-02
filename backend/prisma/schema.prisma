@@ -51,7 +51,6 @@ model Sheet {
   id                    Int      @id @default(autoincrement())
   name                  String
   number_of_questions   Int
-  company_tags          String[]
   has_sub_steps         Boolean  @default(false)
 
   // Relationship
