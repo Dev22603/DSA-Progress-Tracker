@@ -1,16 +1,81 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// title: DSA-Tracker
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// --- Data Source and Generator Configuration ---
+datasource db {
+  // Use your preferred database connector here.
+  // Example: "postgresql", "mysql", "sqlite", "sqlserver"
+  provider = "postgresql" 
+  // In Prisma v7+, the URL is usually defined in prisma.config.ts, 
+  // but you can still access it via environment variable.
+  // url = env("DATABASE_URL") 
+}
 
 generator client {
   provider = "prisma-client-js"
-  // output   = "../generated/prisma"
+  // It's recommended to set an explicit output path in v7+
+  // output = "./generated/prisma-client"
 }
 
-datasource db {
-  provider = "postgresql"
+// --- Enums ---
+
+// Role for the Users model
+enum UserRole {
+  ADMIN
+  USER
+}
+
+// --- Models (Tables) ---
+
+model Question {
+  id                        Int      @id @default(autoincrement())
+  problem_id                String   @unique // Assuming problem_id is a unique identifier (e.g., LeetCode number/slug)
+  problem_name              String
+  company_tags              String[]
+  leetcode_link             String?  // Optional links
+  gfg_link                  String?
+  code360_link              String?
+  tuf_article               String?
+  tuf_yt_video_link         String?
+  difficulty                Int      // Could potentially be an Enum if categories are fixed (e.g., 1, 2, 3)
+  leetcode_premium_question Boolean  @default(false)
+  tuf_link                  String?
+
+  // Relationships
+  sheetQuestions SheetQuestion[]
+  userProgresses UserProgress[]
+
+  @@map("questions")
+}
+
+model Sheet {
+  id                    Int      @id @default(autoincrement())
+  name                  String
+  number_of_questions   Int
+  company_tags          String[]
+  has_sub_steps         Boolean  @default(false)
+
+  // Relationship
+  sheetQuestions SheetQuestion[]
+
+  @@map("sheets")
+}
+
+// Junction table for many-to-many relation between Sheet and Question
+model SheetQuestion {
+  id              Int     @id @default(autoincrement())
+  question_id     Int
+  sheet_id        Int
+  step_number     Int
+  sub_step_number Int     @default(0) // Defaulting to 0 if no sub-step
+
+  // Relationships
+  question        Question @relation(fields: [question_id], references: [id])
+  sheet           Sheet    @relation(fields: [sheet_id], references: [id])
+
+  // Optional: Add a compound unique constraint if the same question shouldn't appear twice on the same sheet.
+  // The step/sub-step might make this unnecessary, but it's a good practice for junction tables.
+  @@unique([question_id, sheet_id]) 
+  @@map("sheet_questions")
 }
 
 model User {
@@ -19,83 +84,32 @@ model User {
   last_name     String
   email         String   @unique
   password_hash String
-  role          String   @default("user")
+  role          UserRole @default(USER) // Using the defined enum
   created_at    DateTime @default(now())
 
-  // Relations
-  progress UserQuestionProgress[]
+  // Relationship
+  userProgresses UserProgress[]
 
   @@map("users")
 }
 
-model Sheet {
-  id            Int      @id @default(autoincrement())
-  name          String
-  has_sub_steps Boolean  @default(false)
-  created_at    DateTime @default(now())
+model UserProgress {
+  id                Int      @id @default(autoincrement())
+  user_id           Int
+  question_id       Int
+  done              Boolean  @default(false)
+  note              String?  // Made optional
+  leetcode_done     Boolean  @default(false)
+  gfg_done          Boolean  @default(false)
+  code360_done      Boolean  @default(false)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt // Automatically updates on save
 
-  // Relations
-  sheet_questions SheetQuestion[]
+  // Relationships
+  user              User     @relation(fields: [user_id], references: [id])
+  question          Question @relation(fields: [question_id], references: [id])
 
-  @@map("sheets")
-}
-
-model Question {
-  id                        Int      @id @default(autoincrement())
-  problem_id                String   @unique
-  problem_name              String
-  company_tags              Json?
-  leetcode_link             String?
-  gfg_link                  String?
-  code360_link              String?
-  tuf_article               String?
-  tuf_yt_video_link         String?
-  tuf_link                  String?
-  difficulty                Float?
-  leetcode_description      String?
-  leetcode_premium_question Boolean?
-  created_at                DateTime @default(now())
-
-  // Relations
-  sheet_questions SheetQuestion[]
-  user_progress   UserQuestionProgress[]
-
-  @@map("questions")
-}
-
-model SheetQuestion {
-  id              Int      @id @default(autoincrement())
-  sheet_id        Int
-  question_id     Int
-  step_number     Int
-  sub_step_number Int?
-  sr_no           Int?
-  topic           String?
-  sub_topic       String?
-  created_at      DateTime @default(now())
-
-  // Relations
-  sheet    Sheet    @relation(fields: [sheet_id], references: [id], onDelete: Cascade)
-  question Question @relation(fields: [question_id], references: [id], onDelete: Cascade)
-
-  @@unique([sheet_id, question_id], name: "unique_sheet_question")
-  @@map("sheet_questions")
-}
-
-model UserQuestionProgress {
-  id            Int       @id @default(autoincrement())
-  user_id       Int
-  question_id   Int
-  is_done       Boolean   @default(false)
-  personal_note String?
-  completed_at  DateTime?
-  created_at    DateTime  @default(now())
-  updated_at    DateTime  @updatedAt
-
-  // Relations
-  user     User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  question Question @relation(fields: [question_id], references: [id], onDelete: Cascade)
-
-  @@unique([user_id, question_id], name: "unique_user_question")
-  @@map("user_question_progress")
+  // Custom constraint: combination of user_id and question_id must be unique
+  @@unique([user_id, question_id]) 
+  @@map("user_progress")
 }

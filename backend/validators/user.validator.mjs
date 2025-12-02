@@ -19,7 +19,7 @@ const UserSignupSchema = z.object({
 			REGEX.PASSWORD,
 			"Password must contain at least one lowercase letter, one uppercase letter, one digit, one special character, and be at least 8 characters long"
 		),
-	role: z.enum(["admin", "user"]).optional().default("user"),
+	role: z.enum(["ADMIN", "USER"]).optional().default("USER"),
 });
 
 const userLoginSchema = z.object({
