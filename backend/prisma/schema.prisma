@@ -65,17 +65,17 @@ model SheetQuestion {
   question_id     Int
   sheet_id        Int
   step_number     Int
-  sub_step_number Int     @default(0) // Defaulting to 0 if no sub-step
+  sub_step_number Int     @default(0)
 
-  // Relationships
   question        Question @relation(fields: [question_id], references: [id])
   sheet           Sheet    @relation(fields: [sheet_id], references: [id])
 
-  // Optional: Add a compound unique constraint if the same question shouldn't appear twice on the same sheet.
-  // The step/sub-step might make this unnecessary, but it's a good practice for junction tables.
-  @@unique([question_id, sheet_id]) 
+  // Correct composite unique key
+  @@unique([question_id, sheet_id, step_number, sub_step_number])
+
   @@map("sheet_questions")
 }
+
 
 model User {
   id            Int      @id @default(autoincrement())

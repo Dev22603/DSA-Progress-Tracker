@@ -87,14 +87,24 @@ async function seedSheetQuestions() {
   const sq = loadJSON("data/sheet_questions.json");
 
   for (const item of sq) {
-    await prisma.sheetQuestion.create({
-      data: {
+    await prisma.sheetQuestion.upsert({
+      where: {
+        question_id_sheet_id_step_number_sub_step_number: {
+          question_id: item.question_id,
+          sheet_id: item.sheet_id,
+          step_number: item.step_number,
+          sub_step_number: item.sub_step_number || 0
+        }
+      },
+      update: {},
+      create: {
         question_id: item.question_id,
         sheet_id: item.sheet_id,
         step_number: item.step_number,
-        sub_step_number: item.sub_step_number || 0,
-      },
+        sub_step_number: item.sub_step_number || 0
+      }
     });
+
   }
 
   console.log("✓ SheetQuestions seeded");
