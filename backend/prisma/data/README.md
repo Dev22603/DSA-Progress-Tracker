@@ -2,6 +2,8 @@
 
 This directory contains JSON files used to seed the database with initial data.
 
+**Note:** The JSON data files are ignored by git (see `backend/.gitignore`). Sample files are created locally but you should populate them with your actual data.
+
 ## Files
 
 - `questions.json` - Contains DSA problem questions with links and metadata
