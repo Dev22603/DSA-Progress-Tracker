@@ -1,6 +1,7 @@
 // app.js (App Setup)
 import express from "express";
 import authRoutes from "./routes/user.routes.mjs";
+import progressRoutes from "./routes/progress.routes.mjs"
 import cors from "cors";
 
 const app = express();
@@ -17,5 +18,6 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use("/api", authRoutes);
+app.use("/api",progressRoutes)
 
 export { app }; // Export the app for use in index.js

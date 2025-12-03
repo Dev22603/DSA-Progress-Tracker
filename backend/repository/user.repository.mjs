@@ -1,4 +1,3 @@
-import { email } from "zod/v4";
 import { prisma } from "../prisma/client.mjs";
 import { getQuestions } from "./question.respository.mjs";
 
