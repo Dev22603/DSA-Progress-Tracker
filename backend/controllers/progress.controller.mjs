@@ -1,14 +1,30 @@
-import { userCompleteProgress } from "../repository/progress.repository.mjs";
+import { userCompleteProgress, userSheetProgress } from "../repository/progress.repository.mjs";
+import { getSheet } from "../repository/sheet.repository.mjs";
 
 const getCompleteUserProgress = async (req, res) => {
     const userId = req.user.userId;
     const progress = await userCompleteProgress(userId);
     console.log(progress);
-    
+
     return res.status(200).json({
         status: 200,
         message: "User progress retrieved successfully",
         data: progress
     });
 };
-export { getCompleteUserProgress };
+const getSheetUserProgress = async (req, res) => {
+    const userId = req.user.userId;
+    const sheetId = Number(req.query.sheetId);
+    const progress = await userSheetProgress(userId);
+    console.log(progress);
+    const sheet = await getSheet(sheetId);
+    return res.status(200).json({
+        status: 200,
+        message: "User progress retrieved successfully",
+        data: {
+            sheet: sheet['name'],
+            progress
+        }
+    });
+};
+export { getCompleteUserProgress,getSheetUserProgress };

@@ -18,15 +18,53 @@ const userCompleteProgress = async (userId) => {
             question: true
         }
     });
+    return data;
+};
 
-    console.log(data); // pretty log
+const userSheetProgress = async (userId, sheetId) => {
+    const data = await prisma.userProgress.findMany({
+        where: {
+            user_id: userId,
+            question: {
+                sheetQuestions: {
+                    some: {
+                        sheet_id: sheetId
+                    }
+                }
+            }
+        },
 
+        select: {
+            id: true,
+            done: true,
+            note: true,
+            leetcode_done: true,
+            gfg_done: true,
+            code360_done: true,
+            created_at: true,
+            updated_at: true,
+            question: {
+                include: {
+                    sheetQuestions: {
+                        where: {
+                            sheet_id: sheetId
+                        },
+                        select: {
+                            step_number: true,
+                            sub_step_number: true
+                        }
+                    }
+                }
+            }
+        }
+    });
+    console.log(JSON.stringify(data, null, 2));
     return data;
 };
 
 
-
 // userCompleteProgress(2);
 export {
-    userCompleteProgress
+    userCompleteProgress,
+    userSheetProgress
 };
