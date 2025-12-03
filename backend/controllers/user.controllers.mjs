@@ -10,6 +10,7 @@ import {
 	getUserByEmail,
 	getUsers,
 	createEmptyUserProgress,
+	deleteUser,
 } from "../repository/user.repository.mjs";
 // better signup
 const signup = async (req, res) => {
@@ -43,11 +44,22 @@ const signup = async (req, res) => {
 			password_hash: hashedPassword,
 		});
 		createEmptyUserProgress(newUser.id);
-
+		const token = jwt.sign(
+			{
+				userId: newUser.id,
+				email: newUser.email,
+				first_name: newUser.first_name,
+				last_name: newUser.last_name,
+				role: newUser.role,
+			},
+			config.JWT_SECRET,
+			{ expiresIn: AUTH.ACCESS_TOKEN_EXPIRY }
+		);
 		res.status(201).json({
 			status: HTTP_STATUS.CREATED,
 			message: "User created successfully",
 			data: {
+				token,
 				id: newUser.id,
 				name: newUser.name,
 				email: newUser.email,
@@ -142,4 +154,22 @@ const getAllUsers = async (req, res) => {
 		});
 	}
 };
-export { signup, login, getAllUsers };
+
+const deleteSelf = async (req, res) => {
+	const userId = req.user.userId;
+	try {
+		const deletedUser = await deleteUser(userId);
+		return res.status(HTTP_STATUS.OK).json({
+			status: HTTP_STATUS.OK,
+			message: "User deleted successfully",
+			data: deletedUser,
+		});
+	} catch (error) {
+		return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+			status: HTTP_STATUS.INTERNAL_SERVER_ERROR,
+			message: MESSAGES.SERVER_ERROR,
+			error: error.message,
+		});
+	}
+};
+export { signup, login, getAllUsers, deleteSelf };

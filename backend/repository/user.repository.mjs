@@ -1,3 +1,4 @@
+import { email } from "zod/v4";
 import { prisma } from "../prisma/client.mjs";
 import { getQuestions } from "./question.respository.mjs";
 
@@ -136,6 +137,26 @@ const createEmptyUserProgress = async (userId) => {
 	console.log("Empty Progress created for user: ", userId);
 
 };
+const deleteUser = async (id) => {
+	try {
+		const deletedUser = await prisma.user.delete({
+			where: { id },
+			select: {
+				id: true,
+				first_name: true,
+				last_name: true,
+				email: true,
+				role: true,
+				created_at: true
+			}
+		});
+
+		return deletedUser;
+	} catch (error) {
+		console.log(error);
+		return error;
+	}
+};
 
 
-export { saveUser, getUserById, getUserByEmail, checkUserExists, getUsers, createEmptyUserProgress };
+export { saveUser, getUserById, getUserByEmail, checkUserExists, getUsers, createEmptyUserProgress, deleteUser };

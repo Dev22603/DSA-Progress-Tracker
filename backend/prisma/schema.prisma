@@ -105,7 +105,7 @@ model UserProgress {
   updated_at        DateTime @updatedAt // Automatically updates on save
 
   // Relationships
-  user              User     @relation(fields: [user_id], references: [id])
+  user              User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
   question          Question @relation(fields: [question_id], references: [id])
 
   // Custom constraint: combination of user_id and question_id must be unique
