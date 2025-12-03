@@ -36,7 +36,7 @@ model Question {
   code360_link              String?
   tuf_article               String?
   tuf_yt_video_link         String?
-  difficulty                Int      // Could potentially be an Enum if categories are fixed (e.g., 1, 2, 3)
+  difficulty                Int?      // Could potentially be an Enum if categories are fixed (e.g., 1, 2, 3)
   leetcode_premium_question Boolean  @default(false)
   tuf_link                  String?
 
@@ -49,7 +49,7 @@ model Question {
 
 model Sheet {
   id                    Int      @id @default(autoincrement())
-  name                  String
+  name                  String    @unique
   number_of_questions   Int
   has_sub_steps         Boolean  @default(false)
 
