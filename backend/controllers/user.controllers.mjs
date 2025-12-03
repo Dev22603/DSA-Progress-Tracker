@@ -9,6 +9,7 @@ import {
 	saveUser,
 	getUserByEmail,
 	getUsers,
+	createEmptyUserProgress,
 } from "../repository/user.repository.mjs";
 // better signup
 const signup = async (req, res) => {
@@ -41,6 +42,7 @@ const signup = async (req, res) => {
 			role,
 			password_hash: hashedPassword,
 		});
+		createEmptyUserProgress(newUser.id);
 
 		res.status(201).json({
 			status: HTTP_STATUS.CREATED,
