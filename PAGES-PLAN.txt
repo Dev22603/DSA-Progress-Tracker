@@ -1,9 +1,0 @@
-I want a login signup page.
-i want a page that displays the sheet.
-the sheet page is not authenticated but when the user click on the the checkbox to
-mark a question as done then if he is not loged in , he will be redirected to the login/ssignup page
-
-i also want a home page that displays what my website does, why every dsa learner sshould use.
-i also want a profile page where a user can go and delete his profile, change his first/last name, change his email.
-
-since it is not a complicated website, i want the ui to be extremely good and simple. the flow of ui should be simple. 
