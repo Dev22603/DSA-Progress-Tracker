@@ -62,9 +62,66 @@ const userSheetProgress = async (userId, sheetId) => {
     return data;
 };
 
+const toggleQuestionDone = async (user_id, question_id) => {
+    const question = await prisma.userProgress.findUnique({
+        where: {
+            user_id_question_id: {
+                user_id, question_id
+            }
+        }
+    });
+    if (!question) {
+        return null;
+    }
+    const new_done = !question.done;
+
+    const questionDone = await prisma.userProgress.update({
+        where: {
+            user_id_question_id: {
+                user_id: user_id,
+                question_id: question_id,
+            },
+        },
+        data: {
+            done: new_done
+        }
+    });
+    return questionDone;
+};
+const toggleQuestionSite = async (user_id, question_id, site) => {
+    const question = await prisma.userProgress.findUnique({
+        where: {
+            user_id_question_id: {
+                user_id, question_id
+            }
+        }
+    });
+    if (!question) {
+        return null;
+    }
+    if (site != "leetcode_done" && site != "code360_done" && site != "gfg_done") {
+        return null;
+    }
+    const new_done = !question[site];
+
+    const questionDone = await prisma.userProgress.update({
+        where: {
+            user_id_question_id: {
+                user_id: user_id,
+                question_id: question_id,
+            },
+        },
+        data: {
+            [site]: new_done
+        }
+    });
+    return questionDone;
+};
 
 // userCompleteProgress(2);
 export {
     userCompleteProgress,
-    userSheetProgress
+    userSheetProgress,
+    toggleQuestionDone,
+    toggleQuestionSite
 };
