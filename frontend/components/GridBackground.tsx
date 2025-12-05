@@ -4,8 +4,11 @@ export default function GridBackground() {
       {/* Grid Pattern */}
       <div className="fixed inset-0 -z-10 pointer-events-none grid-pattern" />
 
-      {/* Gradient Background (Light Theme Only) */}
+      {/* Light Theme Gradient Background */}
       <div className="fixed inset-0 -z-20 pointer-events-none light-gradient" />
+
+      {/* Dark Theme Solid Background */}
+      <div className="fixed inset-0 -z-20 pointer-events-none dark-background" />
     </>
   );
 }
