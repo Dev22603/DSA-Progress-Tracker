@@ -1,5 +1,86 @@
 @import "tailwindcss";
 
+/* ========================================
+   🎨 GRADIENT PRESETS - Easy Theme Switching!
+
+   How to use:
+   1. Uncomment the option you want to try
+   2. Comment out the currently active one
+   3. Save the file and refresh your browser
+
+   Want to create your own?
+   Just copy any option and change the hex colors!
+   Use https://tailwindcss.com/docs/customizing-colors for color inspiration
+   ======================================== */
+
+/* Option 1: Soft Pink to Peach 🌸 */
+/* :root {
+  --gradient-start: #fce7f3;
+  --gradient-end: #fed7aa;
+} */
+
+/* Option 2: Light Blue to Rose 🌊 */
+/* :root {
+  --gradient-start: #dbeafe;
+  --gradient-end: #fecaca;
+} */
+
+/* Option 3: Lavender to Pink 💜 */
+/* :root {
+  --gradient-start: #e0e7ff;
+  --gradient-end: #fce7f3;
+} */
+
+/* Option 4: Mint to Peach 🍃 */
+/* :root {
+  --gradient-start: #d1fae5;
+  --gradient-end: #fed7aa;
+} */
+
+/* Option 5: Sky Blue to Lavender ☁️ - ACTIVE */
+:root {
+  --gradient-start: #e0f2fe;
+  --gradient-end: #f3e8ff;
+}
+
+/* Option 6: Cream to Light Pink 🍰 */
+/* :root {
+  --gradient-start: #fef3c7;
+  --gradient-end: #fce7f3;
+} */
+
+/* Option 7: Pale Green to Blue 🌿 */
+/* :root {
+  --gradient-start: #d1fae5;
+  --gradient-end: #dbeafe;
+} */
+
+/* Option 8: Light Orange to Pink 🌅 */
+/* :root {
+  --gradient-start: #fed7aa;
+  --gradient-end: #fbcfe8;
+} */
+
+/* Option 9: Subtle Grey to Lavender 🌫️ */
+/* :root {
+  --gradient-start: #f3f4f6;
+  --gradient-end: #e0e7ff;
+} */
+
+/* Option 10: Warm Peach to Cool Blue 🏖️ */
+/* :root {
+  --gradient-start: #ffedd5;
+  --gradient-end: #bfdbfe;
+} */
+
+/* ======================================== */
+
+/* Grid Colors (change if needed) */
+:root {
+  --grid-color-light: rgba(148, 163, 184, 0.15);  /* Light grey grid for light theme */
+  --grid-color-dark: rgba(255, 255, 255, 0.05);   /* Subtle white grid for dark theme */
+}
+
 :root {
   --background: #ffffff;
   --foreground: #0a0a0a;
@@ -24,10 +105,14 @@
 }
 
 body {
-  background: var(--background);
+  background: transparent;
   color: var(--foreground);
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dark body {
+  background: var(--background);
 }
 
 * {
@@ -36,4 +121,28 @@ body {
 
 html {
   scroll-behavior: smooth;
+}
+
+/* Grid Pattern */
+.grid-pattern {
+  background-image:
+    linear-gradient(to right, var(--grid-color-light) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-color-light) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+.dark .grid-pattern {
+  background-image:
+    linear-gradient(to right, var(--grid-color-dark) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-color-dark) 1px, transparent 1px);
+}
+
+/* Light Theme Gradient Background */
+.light-gradient {
+  background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+  opacity: 1;
+}
+
+.dark .light-gradient {
+  opacity: 0;
 }
