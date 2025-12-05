@@ -108,6 +108,36 @@ Client Component (needs interactivity, state)
 
 ---
 
+### 🔎 Sheet Page – Detailed Specs
+
+- **Pagination/Loading**
+  - Infinite scroll: load 20 rows initially; when the table scrollbar reaches bottom, fetch next 20 until no more remain.
+  - On each fetch, show a dot/ellipsis loader (three dots fading in/out) in the table footer or a loading row until the API returns.
+  - API called per page; disable duplicate requests while one is in flight; handle end-of-list state gracefully.
+
+- **Columns**
+  - `sr_no`
+  - `problem_name`: limit visible length; wrap long names and allow row height to grow.
+  - `leetcode link`: display text "link" that opens the LeetCode URL.
+  - `leetcode_done`: checkbox.
+  - `gfg link`: display text "link" that opens the GFG URL.
+  - `gfg_done`: checkbox.
+  - `code360 link`: display text "link" that opens the Code360 URL.
+  - `code360_done`: checkbox.
+  - `done`: checkbox.
+  - `note`: clicking opens a modal to write/edit a note.
+  - `yt video link`: show a YouTube icon that opens the video.
+  - `difficulty`.
+
+- **Ordering**
+  - Primary sort by `step_no` ascending.
+  - Secondary sort by `sub_step_no` ascending.
+
+- **Modals/Interactions**
+  - Clicking `problem_name` opens a modal with full details, including company tags.
+  - Clicking `note` opens a modal to add/edit a note; persist per user when authenticated.
+  - Checkboxes require auth to persist; follow Smart Auth Flow above.
+
 ## 🔐 3. Login Page (`/login`)
 
 ### Purpose
