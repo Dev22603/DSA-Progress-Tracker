@@ -314,23 +314,14 @@ export default function SheetPage() {
                     <th className="px-3 py-2 text-left font-semibold text-gray-700 dark:text-gray-300 min-w-[200px]">
                       Problem
                     </th>
-                    <th className="px-3 py-2 text-left font-semibold text-gray-700 dark:text-gray-300">
+                    <th className="px-3 py-2 text-center font-semibold text-gray-700 dark:text-gray-300">
                       LC
                     </th>
-                    <th className="px-3 py-2 text-left font-semibold text-gray-700 dark:text-gray-300">
-                      LC Done
-                    </th>
-                    <th className="px-3 py-2 text-left font-semibold text-gray-700 dark:text-gray-300">
+                    <th className="px-3 py-2 text-center font-semibold text-gray-700 dark:text-gray-300">
                       GFG
                     </th>
-                    <th className="px-3 py-2 text-left font-semibold text-gray-700 dark:text-gray-300">
-                      GFG Done
-                    </th>
-                    <th className="px-3 py-2 text-left font-semibold text-gray-700 dark:text-gray-300">
+                    <th className="px-3 py-2 text-center font-semibold text-gray-700 dark:text-gray-300">
                       Code360
-                    </th>
-                    <th className="px-3 py-2 text-left font-semibold text-gray-700 dark:text-gray-300">
-                      Code360 Done
                     </th>
                     <th className="px-3 py-2 text-left font-semibold text-gray-700 dark:text-gray-300">
                       Done
@@ -363,70 +354,73 @@ export default function SheetPage() {
                         </button>
                       </td>
                       <td className="px-3 py-2 align-top">
-                        {item.question.leetcode_link ? (
-                          <a
-                            href={item.question.leetcode_link}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-blue-500 hover:text-blue-600 underline"
-                          >
-                            link
-                          </a>
-                        ) : (
-                          <span className="text-gray-400 text-xs">—</span>
-                        )}
+                        <div className="flex items-center justify-center gap-3">
+                          {item.question.leetcode_link ? (
+                            <a
+                              href={item.question.leetcode_link}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-blue-500 hover:text-blue-600 underline text-xs whitespace-nowrap"
+                            >
+                              link
+                            </a>
+                          ) : (
+                            <span className="text-gray-400 text-xs">—</span>
+                          )}
+                          <span className="text-gray-300 dark:text-gray-600">|</span>
+                          <input
+                            type="checkbox"
+                            className="h-4 w-4 text-blue-500 rounded border-gray-300 cursor-pointer"
+                            checked={item.leetcode_done}
+                            onChange={() => handleToggle(item, "leetcode_done")}
+                          />
+                        </div>
                       </td>
                       <td className="px-3 py-2 align-top">
-                        <input
-                          type="checkbox"
-                          className="h-4 w-4 text-blue-500 rounded border-gray-300 cursor-pointer"
-                          checked={item.leetcode_done}
-                          onChange={() => handleToggle(item, "leetcode_done")}
-                        />
+                        <div className="flex items-center justify-center gap-3">
+                          {item.question.gfg_link ? (
+                            <a
+                              href={item.question.gfg_link}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-blue-500 hover:text-blue-600 underline text-xs whitespace-nowrap"
+                            >
+                              link
+                            </a>
+                          ) : (
+                            <span className="text-gray-400 text-xs">—</span>
+                          )}
+                          <span className="text-gray-300 dark:text-gray-600">|</span>
+                          <input
+                            type="checkbox"
+                            className="h-4 w-4 text-blue-500 rounded border-gray-300 cursor-pointer"
+                            checked={item.gfg_done}
+                            onChange={() => handleToggle(item, "gfg_done")}
+                          />
+                        </div>
                       </td>
                       <td className="px-3 py-2 align-top">
-                        {item.question.gfg_link ? (
-                          <a
-                            href={item.question.gfg_link}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-blue-500 hover:text-blue-600 underline"
-                          >
-                            link
-                          </a>
-                        ) : (
-                          <span className="text-gray-400 text-xs">—</span>
-                        )}
-                      </td>
-                      <td className="px-3 py-2 align-top">
-                        <input
-                          type="checkbox"
-                          className="h-4 w-4 text-blue-500 rounded border-gray-300 cursor-pointer"
-                          checked={item.gfg_done}
-                          onChange={() => handleToggle(item, "gfg_done")}
-                        />
-                      </td>
-                      <td className="px-3 py-2 align-top">
-                        {item.question.code360_link ? (
-                          <a
-                            href={item.question.code360_link}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-blue-500 hover:text-blue-600 underline"
-                          >
-                            link
-                          </a>
-                        ) : (
-                          <span className="text-gray-400 text-xs">—</span>
-                        )}
-                      </td>
-                      <td className="px-3 py-2 align-top">
-                        <input
-                          type="checkbox"
-                          className="h-4 w-4 text-blue-500 rounded border-gray-300 cursor-pointer"
-                          checked={item.code360_done}
-                          onChange={() => handleToggle(item, "code360_done")}
-                        />
+                        <div className="flex items-center justify-center gap-3">
+                          {item.question.code360_link ? (
+                            <a
+                              href={item.question.code360_link}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-blue-500 hover:text-blue-600 underline text-xs whitespace-nowrap"
+                            >
+                              link
+                            </a>
+                          ) : (
+                            <span className="text-gray-400 text-xs">—</span>
+                          )}
+                          <span className="text-gray-300 dark:text-gray-600">|</span>
+                          <input
+                            type="checkbox"
+                            className="h-4 w-4 text-blue-500 rounded border-gray-300 cursor-pointer"
+                            checked={item.code360_done}
+                            onChange={() => handleToggle(item, "code360_done")}
+                          />
+                        </div>
                       </td>
                       <td className="px-3 py-2 align-top">
                         <input
