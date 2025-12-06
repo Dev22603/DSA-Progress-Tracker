@@ -262,7 +262,7 @@ export default function SheetPage() {
         <div className="flex gap-3 justify-end mr-16">
           <Link
             href="/"
-            className="px-4 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-700 rounded-lg text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+            className="px-4 py-2 bg-background text-foreground border border-foreground/20 rounded-lg text-sm font-medium hover:bg-foreground/5 transition"
           >
             Home
           </Link>
@@ -270,7 +270,7 @@ export default function SheetPage() {
             <button
               type="button"
               onClick={handleLogout}
-              className="px-4 py-2 bg-white/10 dark:bg-white/10 border border-gray-300 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-900 dark:text-gray-100 hover:bg-white/20 dark:hover:bg-white/20 transition"
+              className="px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-lg text-sm font-semibold transition"
             >
               Logout
             </button>
