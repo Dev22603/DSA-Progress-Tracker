@@ -1,9 +1,6 @@
-# Netlify configuration for DSA Progress Tracker
+# Netlify configuration for DSA Progress Tracker Frontend
 
 [build]
-  # Directory with the Next.js app
-  base = "frontend"
-
   # Build command
   command = "npm run build"
 
@@ -14,10 +11,13 @@
 [build.environment]
   NODE_VERSION = "20"
 
-# Redirect rules
+# Environment variables (set these in Netlify UI)
+# NEXT_PUBLIC_API_BASE_URL = "your-backend-api-url"
+
+# Redirect rules for API proxy (optional - configure backend URL)
 [[redirects]]
   from = "/api/*"
-  to = "http://localhost:5000/api/:splat"
+  to = "https://your-backend-url.com/api/:splat"
   status = 200
   force = false
 
