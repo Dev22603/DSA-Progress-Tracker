@@ -341,6 +341,7 @@ export default function SheetPage() {
                   {visibleItems.map((item, index) => (
                     <tr
                       key={item.id}
+                      className={index % 2 === 0 ? "bg-white dark:bg-gray-950" : "bg-gray-50/50 dark:bg-gray-900/50"}
                     >
                       <td className="px-3 py-2 align-top text-gray-600 dark:text-gray-400">
                         {index + 1}
