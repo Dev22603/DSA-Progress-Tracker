@@ -17,7 +17,7 @@
 # Redirect rules for API proxy (optional - configure backend URL)
 [[redirects]]
   from = "/api/*"
-  to = "https://your-backend-url.com/api/:splat"
+  to = "http://localhost:5000/api/:splat"
   status = 200
   force = false
 
