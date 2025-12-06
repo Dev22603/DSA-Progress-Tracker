@@ -251,10 +251,10 @@ export default function SheetPage() {
   const visibleItems = items.slice(0, visibleCount);
 
   return (
-    <div className="min-h-screen flex flex-col px-4 sm:px-6 lg:px-8 py-4">
+    <div className="min-h-screen flex flex-col px-4 sm:px-6 lg:px-8 py-4 bg-transparent text-gray-900 dark:text-gray-100">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-3xl font-bold mb-1">DSA Problems Sheet</h1>
+          <h1 className="text-3xl font-bold mb-1 text-gray-900 dark:text-gray-100">DSA Problems Sheet</h1>
           <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">
             Track your progress across structured DSA problems.
           </p>
@@ -356,7 +356,7 @@ export default function SheetPage() {
                       <td className="px-3 py-2 align-top">
                         <button
                           onClick={() => setDetailItem(item)}
-                          className="text-left text-blue-500 hover:text-blue-600 font-medium line-clamp-2"
+                          className="text-left text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium line-clamp-2"
                         >
                           {item.question.problem_name}
                         </button>
@@ -367,12 +367,12 @@ export default function SheetPage() {
                             href={item.question.leetcode_link}
                             target="_blank"
                             rel="noreferrer"
-                            className="text-blue-500 hover:text-blue-600 underline"
+                            className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 underline"
                           >
                             link
                           </a>
                         ) : (
-                          <span className="text-gray-400 text-xs">—</span>
+                          <span className="text-gray-400 dark:text-gray-500 text-xs">—</span>
                         )}
                       </td>
                       <td className="px-3 py-2 align-top">
@@ -389,12 +389,12 @@ export default function SheetPage() {
                             href={item.question.gfg_link}
                             target="_blank"
                             rel="noreferrer"
-                            className="text-blue-500 hover:text-blue-600 underline"
+                            className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 underline"
                           >
                             link
                           </a>
                         ) : (
-                          <span className="text-gray-400 text-xs">—</span>
+                          <span className="text-gray-400 dark:text-gray-500 text-xs">—</span>
                         )}
                       </td>
                       <td className="px-3 py-2 align-top">
@@ -411,12 +411,12 @@ export default function SheetPage() {
                             href={item.question.code360_link}
                             target="_blank"
                             rel="noreferrer"
-                            className="text-blue-500 hover:text-blue-600 underline"
+                            className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 underline"
                           >
                             link
                           </a>
                         ) : (
-                          <span className="text-gray-400 text-xs">—</span>
+                          <span className="text-gray-400 dark:text-gray-500 text-xs">—</span>
                         )}
                       </td>
                       <td className="px-3 py-2 align-top">
@@ -532,7 +532,7 @@ export default function SheetPage() {
                     href={detailItem.question.tuf_article}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-blue-500 hover:text-blue-600 underline"
+                    className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 underline"
                   >
                     Open
                   </a>
