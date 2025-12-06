@@ -46,11 +46,13 @@ export default function SheetPage() {
   const [visibleCount, setVisibleCount] = useState(20);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [detailItem, setDetailItem] = useState<ProgressItem | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
 
     const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
 
     const sortByStep = (list: ProgressItem[]): ProgressItem[] => {
       return [...list].sort((a, b) => {
@@ -144,6 +146,15 @@ export default function SheetPage() {
       fetchPublic();
     }
   }, []);
+
+  const handleLogout = () => {
+    if (typeof window === "undefined") return;
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("redirectAfterLogin");
+    setIsLoggedIn(false);
+    router.push("/");
+  };
 
   const requireAuth = (): string | null => {
     if (typeof window === "undefined") return null;
@@ -240,7 +251,7 @@ export default function SheetPage() {
   const visibleItems = items.slice(0, visibleCount);
 
   return (
-    <div className="min-h-screen flex flex-col px-4 sm:px-6 lg:px-8 py-10">
+    <div className="min-h-screen flex flex-col px-4 sm:px-6 lg:px-8 py-4">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
           <h1 className="text-3xl font-bold mb-1">DSA Problems Sheet</h1>
@@ -248,19 +259,22 @@ export default function SheetPage() {
             Track your progress across structured DSA problems.
           </p>
         </div>
-        <div className="flex gap-3 justify-end">
+        <div className="flex gap-3 justify-end mr-16">
           <Link
             href="/"
-            className="px-4 py-2 bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-800 transition"
+            className="px-4 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-700 rounded-lg text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition"
           >
             Home
           </Link>
-          <Link
-            href="/login"
-            className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-semibold transition shadow-sm"
-          >
-            Login
-          </Link>
+          {isLoggedIn && (
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="px-4 py-2 bg-white/10 dark:bg-white/10 border border-gray-300 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-900 dark:text-gray-100 hover:bg-white/20 dark:hover:bg-white/20 transition"
+            >
+              Logout
+            </button>
+          )}
         </div>
       </div>
 
@@ -283,14 +297,14 @@ export default function SheetPage() {
           </p>
         </div>
       ) : (
-        <div className="bg-white/5 dark:bg-white/5 backdrop-blur-sm border border-gray-300/60 dark:border-gray-800 rounded-lg shadow-sm flex-1 flex flex-col">
+        <div className="bg-white/90 dark:bg-gray-950/80 backdrop-blur-sm rounded-lg shadow-sm flex-1 flex flex-col">
           <div className="overflow-x-auto">
             <div
               className="max-h-[70vh] overflow-y-auto"
               onScroll={handleScroll}
             >
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-800 text-xs sm:text-sm">
-                <thead className="bg-gray-50/80 dark:bg-gray-900/70 sticky top-0 z-10 backdrop-blur-sm">
+              <table className="min-w-full text-xs sm:text-sm">
+                <thead className="bg-gray-50 dark:bg-gray-900 sticky top-0 z-10">
                   <tr>
                     <th className="px-3 py-2 text-left font-semibold text-gray-700 dark:text-gray-300">
                       #
@@ -330,7 +344,7 @@ export default function SheetPage() {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
+                <tbody className="divide-y divide-gray-200/70 dark:divide-gray-800/60">
                   {visibleItems.map((item, index) => (
                     <tr
                       key={item.id}

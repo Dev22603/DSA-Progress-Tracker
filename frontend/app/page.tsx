@@ -1,6 +1,27 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+  }, []);
+
+  const handleLogout = () => {
+    if (typeof window === "undefined") return;
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("redirectAfterLogin");
+    setIsLoggedIn(false);
+    router.push("/");
+  };
   return (
     <main className="min-h-screen">
       {/* Hero Section */}
@@ -21,12 +42,22 @@ export default function Home() {
             >
               View Sheet
             </Link>
-            <Link
-              href="/signup"
-              className="px-8 py-4 bg-white/10 dark:bg-white/10 backdrop-blur-sm border border-gray-300 dark:border-gray-700 hover:bg-white/20 dark:hover:bg-white/20 font-semibold rounded-lg transition-all duration-200 w-full sm:w-auto"
-            >
-              Sign Up
-            </Link>
+            {isLoggedIn ? (
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="px-8 py-4 bg-white/10 dark:bg-white/10 backdrop-blur-sm border border-gray-300 dark:border-gray-700 hover:bg-white/20 dark:hover:bg-white/20 font-semibold rounded-lg transition-all duration-200 w-full sm:w-auto"
+              >
+                Logout
+              </button>
+            ) : (
+              <Link
+                href="/signup"
+                className="px-8 py-4 bg-white/10 dark:bg-white/10 backdrop-blur-sm border border-gray-300 dark:border-gray-700 hover:bg-white/20 dark:hover:bg-white/20 font-semibold rounded-lg transition-all duration-200 w-full sm:w-auto"
+              >
+                Sign Up
+              </Link>
+            )}
           </div>
         </div>
       </section>
