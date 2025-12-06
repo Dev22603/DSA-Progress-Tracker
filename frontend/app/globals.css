@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Configure dark mode to use class strategy */
+@variant dark (&:where(.dark, .dark *));
+
 /* ========================================
    🎨 GRADIENT PRESETS - Easy Theme Switching!
 
