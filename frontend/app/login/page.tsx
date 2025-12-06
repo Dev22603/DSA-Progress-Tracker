@@ -4,6 +4,9 @@ import { useState, FormEvent } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:5000/api';
+
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
@@ -19,26 +22,33 @@ export default function LoginPage() {
 
     try {
       // TODO: Replace with actual API call
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
 
-      if (!response.ok) {
-        throw new Error('Invalid credentials');
-      }
-
       const data = await response.json();
 
-      // Store token in localStorage
-      localStorage.setItem('token', data.token);
-      if (data.user) {
-        localStorage.setItem('user', JSON.stringify(data.user));
+      if (!response.ok) {
+        throw new Error(data?.message || 'Invalid credentials');
       }
 
-      // Redirect to sheet page
-      router.push('/sheet');
+      const payload = data.data ?? data;
+
+      if (!payload?.token) {
+        throw new Error('Invalid response from server');
+      }
+
+      // Store token in localStorage
+      localStorage.setItem('token', payload.token);
+      localStorage.setItem('user', JSON.stringify(payload));
+
+      const redirectPath =
+        localStorage.getItem('redirectAfterLogin') || '/sheet';
+      localStorage.removeItem('redirectAfterLogin');
+
+      router.push(redirectPath);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {

@@ -4,6 +4,9 @@ import { useState, FormEvent } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:5000/api';
+
 export default function SignupPage() {
   const router = useRouter();
   const [firstName, setFirstName] = useState('');
@@ -50,27 +53,39 @@ export default function SignupPage() {
 
     try {
       // TODO: Replace with actual API call
-      const response = await fetch('/api/auth/signup', {
+      const response = await fetch(`${API_BASE_URL}/auth/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ firstName, lastName, email, password }),
+        body: JSON.stringify({
+          first_name: firstName,
+          last_name: lastName,
+          email,
+          password,
+          role: 'USER',
+        }),
       });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message || 'Failed to create account');
-      }
 
       const data = await response.json();
 
-      // Store token in localStorage
-      localStorage.setItem('token', data.token);
-      if (data.user) {
-        localStorage.setItem('user', JSON.stringify(data.user));
+      if (!response.ok) {
+        throw new Error(data?.message || 'Failed to create account');
       }
 
-      // Redirect to sheet page
-      router.push('/sheet');
+      const payload = data.data ?? data;
+
+      if (!payload?.token) {
+        throw new Error('Invalid response from server');
+      }
+
+      // Store token in localStorage
+      localStorage.setItem('token', payload.token);
+      localStorage.setItem('user', JSON.stringify(payload));
+
+      const redirectPath =
+        localStorage.getItem('redirectAfterLogin') || '/sheet';
+      localStorage.removeItem('redirectAfterLogin');
+
+      router.push(redirectPath);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {

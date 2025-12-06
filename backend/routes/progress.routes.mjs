@@ -1,9 +1,10 @@
 import express from "express";
 import { authenticate, authorize } from "../middlewares/auth.mjs";
-import { getCompleteUserProgress, getSheetUserProgress, toggleQuestion, toggleQuestionSiteProgress } from "../controllers/progress.controller.mjs";
+import { getCompleteUserProgress, getSheetUserProgress, getPublicSheetQuestions, toggleQuestion, toggleQuestionSiteProgress } from "../controllers/progress.controller.mjs";
 
 const router = express.Router();
 
+router.get("/sheet_questions", getPublicSheetQuestions);
 router.get("/complete_progress", authenticate, getCompleteUserProgress);
 router.get("/sheet_progress", authenticate, getSheetUserProgress);
 router.post("/toggle_question", authenticate, toggleQuestion);
