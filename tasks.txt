@@ -1,7 +1,0 @@
-there are a few problems that need to be fixed:
-1. there is no logout button when the user logs in. 
-2. in dark mode the text and the bg of "home" button, both turn white that makes "home" disappear.
-3. the UI of the sheets table sucks. the header row is semi transparent and when the questions are scrolled up, i can see the question's row's text behind the headers.
-4. in the sheets table, i dont like that defined look with the boundaries. 
-5.when logged in, the home page should not show the signup button, instead there should be a button someehere to logout
-6. on the sheets page, the theme button and the login button intersect each other. 
