@@ -297,13 +297,15 @@ export default function SheetPage() {
           </p>
         </div>
       ) : (
-        <div className="bg-white/90 dark:bg-gray-950/80 backdrop-blur-sm rounded-lg shadow-sm flex-1 flex flex-col">
-          <div className="overflow-x-auto">
+        <div className="bg-white/90 dark:bg-gray-950/80 backdrop-blur-sm rounded-lg shadow-sm flex flex-col">
+          <div className="overflow-x-auto relative">
             <div
-              className="max-h-[70vh] overflow-y-auto"
+              className={`max-h-[80vh] overflow-y-auto transition-all duration-200 ${
+                isLoadingMore ? "blur-[2px]" : ""
+              }`}
               onScroll={handleScroll}
             >
-              <table className="min-w-full text-xs sm:text-sm">
+              <table className="min-w-full text-xs sm:text-sm border-collapse">
                 <thead className="bg-gray-50 dark:bg-gray-900 sticky top-0 z-10">
                   <tr>
                     <th className="px-3 py-2 text-left font-semibold text-gray-700 dark:text-gray-300">
@@ -348,7 +350,6 @@ export default function SheetPage() {
                   {visibleItems.map((item, index) => (
                     <tr
                       key={item.id}
-                      className={item.done ? "bg-green-500/5" : ""}
                     >
                       <td className="px-3 py-2 align-top text-gray-600 dark:text-gray-400">
                         {index + 1}
@@ -477,23 +478,14 @@ export default function SheetPage() {
                       </td>
                     </tr>
                   ))}
-                  {isLoadingMore && (
-                    <tr>
-                      <td
-                        colSpan={12}
-                        className="px-3 py-4 text-center text-gray-500 dark:text-gray-400"
-                      >
-                        <span className="inline-flex gap-1 items-center">
-                          <span className="w-2 h-2 rounded-full bg-gray-400 animate-pulse" />
-                          <span className="w-2 h-2 rounded-full bg-gray-400 animate-pulse delay-150" />
-                          <span className="w-2 h-2 rounded-full bg-gray-400 animate-pulse delay-300" />
-                        </span>
-                      </td>
-                    </tr>
-                  )}
                 </tbody>
               </table>
             </div>
+            {isLoadingMore && (
+              <div className="absolute inset-0 flex items-center justify-center bg-white/20 dark:bg-gray-950/20">
+                <div className="w-8 h-8 border-4 border-gray-300 dark:border-gray-600 border-t-blue-500 rounded-full animate-spin"></div>
+              </div>
+            )}
           </div>
         </div>
       )}
