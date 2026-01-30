@@ -363,9 +363,9 @@ export default function SheetPage() {
         </div>
       ) : (
         <div className="max-w-[1400px] mx-auto">
-          <div className="overflow-x-auto">
+          <div className="overflow-x-clip">
             <table className="w-full text-sm">
-              <thead className="border-b-2 border-border bg-surface">
+              <thead className="border-b-2 border-border bg-surface sticky z-20" style={{ top: `${theadTop}px` }}>
                 <tr>
                   <th className="px-4 sm:px-6 py-3 text-left font-bold text-xs uppercase tracking-wider text-muted w-12">
                     #
