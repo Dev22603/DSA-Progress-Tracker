@@ -1,8 +1,7 @@
 "use client";
 
-import { UIEvent, useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:5000/api";
@@ -43,12 +42,16 @@ export default function SheetPage() {
   const [items, setItems] = useState<ProgressItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
-  const [visibleCount, setVisibleCount] = useState(20);
+  const [visibleCount, setVisibleCount] = useState(40);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [detailItem, setDetailItem] = useState<ProgressItem | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [noteItem, setNoteItem] = useState<ProgressItem | null>(null);
   const [noteText, setNoteText] = useState("");
+
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const [theadTop, setTheadTop] = useState(64); // 64px = navbar h-16
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -234,24 +237,45 @@ export default function SheetPage() {
     setNoteText("");
   };
 
-  const loadMore = () => {
+  // Measure sticky header height so thead sticks right below it
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+
+    const update = () => setTheadTop(64 + el.offsetHeight);
+    update();
+
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const loadMore = useCallback(() => {
     if (isLoadingMore || visibleCount >= items.length) return;
     setIsLoadingMore(true);
     setTimeout(() => {
-      setVisibleCount((current) => Math.min(current + 20, items.length));
+      setVisibleCount((current) => Math.min(current + 40, items.length));
       setIsLoadingMore(false);
-    }, 400);
-  };
+    }, 300);
+  }, [isLoadingMore, visibleCount, items.length]);
 
-  const handleScroll = (event: UIEvent<HTMLDivElement>) => {
-    const target = event.currentTarget;
-    if (
-      target.scrollTop + target.clientHeight >=
-      target.scrollHeight - 48
-    ) {
-      loadMore();
-    }
-  };
+  // Infinite scroll via IntersectionObserver on a sentinel element
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          loadMore();
+        }
+      },
+      { rootMargin: "200px" },
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [loadMore]);
 
   const difficultyLabel = (value: number): string => {
     if (value === 0) return "Easy";
@@ -271,9 +295,9 @@ export default function SheetPage() {
   const visibleItems = items.slice(0, visibleCount);
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* Header bar */}
-      <div className="bg-background border-b-2 border-border px-6 lg:px-8 py-6">
+    <div className="min-h-screen">
+      {/* Sticky header — pinned below navbar */}
+      <div ref={headerRef} className="sticky top-16 z-30 bg-background/95 backdrop-blur-md border-b-2 border-border px-6 lg:px-8 py-5">
         <div className="max-w-[1400px] mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-3xl sm:text-4xl font-black tracking-tight mb-1">
@@ -295,7 +319,6 @@ export default function SheetPage() {
               )}
             </p>
           </div>
-          {/* Progress bar */}
           {items.length > 0 && (
             <div className="w-full sm:w-64 flex-shrink-0">
               <div className="w-full h-3 bg-surface rounded-full border-2 border-border overflow-hidden">
@@ -310,7 +333,7 @@ export default function SheetPage() {
       </div>
 
       {error && (
-        <div className="mx-6 lg:mx-8 mt-4">
+        <div className="px-6 lg:px-8 mt-4">
           <div className="max-w-[1400px] mx-auto p-4 bg-danger/10 border-2 border-danger/30 rounded-xl text-sm text-danger font-medium flex items-center justify-between">
             <span>{error}</span>
             <button onClick={() => setError("")} className="ml-4 font-bold hover:opacity-70">
@@ -321,14 +344,14 @@ export default function SheetPage() {
       )}
 
       {isLoading ? (
-        <div className="flex-1 flex items-center justify-center">
+        <div className="flex items-center justify-center py-40">
           <div className="flex flex-col items-center gap-4">
             <div className="w-10 h-10 border-3 border-border border-t-pink rounded-full animate-spin" />
             <span className="text-muted text-sm font-medium">Loading problems...</span>
           </div>
         </div>
       ) : items.length === 0 ? (
-        <div className="flex-1 flex items-center justify-center">
+        <div className="flex items-center justify-center py-40">
           <div className="text-center">
             <div className="w-16 h-16 bg-surface rounded-2xl flex items-center justify-center mx-auto mb-4 border-2 border-border">
               <svg className="w-8 h-8 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -339,226 +362,210 @@ export default function SheetPage() {
           </div>
         </div>
       ) : (
-        <div className="flex-1 px-6 lg:px-8 py-6">
-          <div className="max-w-[1400px] mx-auto">
-            <div className="bg-background border-2 border-border rounded-2xl overflow-hidden">
-              <div className="overflow-x-auto relative">
-                <div
-                  className={`max-h-[75vh] overflow-y-auto transition-all duration-200 ${
-                    isLoadingMore ? "opacity-60" : ""
-                  }`}
-                  onScroll={handleScroll}
-                >
-                  <table className="w-full text-sm">
-                    <thead className="bg-surface sticky top-0 z-10 border-b-2 border-border">
-                      <tr>
-                        <th className="px-4 py-3 text-left font-bold text-xs uppercase tracking-wider text-muted w-12">
-                          #
-                        </th>
-                        <th className="px-4 py-3 text-left font-bold text-xs uppercase tracking-wider text-muted min-w-[240px]">
-                          Problem
-                        </th>
-                        <th className="px-4 py-3 text-center font-bold text-xs uppercase tracking-wider text-muted">
-                          LC
-                        </th>
-                        <th className="px-4 py-3 text-center font-bold text-xs uppercase tracking-wider text-muted">
-                          GFG
-                        </th>
-                        <th className="px-4 py-3 text-center font-bold text-xs uppercase tracking-wider text-muted">
-                          Code360
-                        </th>
-                        <th className="px-4 py-3 text-center font-bold text-xs uppercase tracking-wider text-muted">
-                          Done
-                        </th>
-                        <th className="px-4 py-3 text-center font-bold text-xs uppercase tracking-wider text-muted">
-                          Note
-                        </th>
-                        <th className="px-4 py-3 text-center font-bold text-xs uppercase tracking-wider text-muted">
-                          Video
-                        </th>
-                        <th className="px-4 py-3 text-left font-bold text-xs uppercase tracking-wider text-muted">
-                          Difficulty
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {visibleItems.map((item, index) => (
-                        <tr
-                          key={item.id}
-                          className={`border-b border-border/50 transition-colors duration-100 hover:bg-surface/60 ${
-                            item.done ? "bg-teal/[0.03]" : ""
-                          }`}
-                        >
-                          <td className="px-4 py-3 text-muted font-mono text-xs">
-                            {index + 1}
-                          </td>
-                          <td className="px-4 py-3">
-                            <button
-                              onClick={() => setDetailItem(item)}
-                              className={`text-left font-semibold transition-colors line-clamp-1 ${
-                                item.done
-                                  ? "text-teal line-through decoration-teal/40"
-                                  : "text-foreground hover:text-pink"
-                              }`}
-                            >
-                              {item.question.problem_name}
-                            </button>
-                          </td>
-
-                          {/* LC */}
-                          <td className="px-4 py-3">
-                            <div className="flex items-center justify-center gap-2">
-                              {item.question.leetcode_link ? (
-                                <a
-                                  href={item.question.leetcode_link}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                  className="text-xs font-bold text-muted hover:text-foreground underline underline-offset-2 decoration-border hover:decoration-foreground transition-colors"
-                                >
-                                  link
-                                </a>
-                              ) : (
-                                <span className="text-border text-xs">&mdash;</span>
-                              )}
-                              <input
-                                type="checkbox"
-                                checked={item.leetcode_done}
-                                onChange={() => handleToggle(item, "leetcode_done")}
-                              />
-                            </div>
-                          </td>
-
-                          {/* GFG */}
-                          <td className="px-4 py-3">
-                            <div className="flex items-center justify-center gap-2">
-                              {item.question.gfg_link ? (
-                                <a
-                                  href={item.question.gfg_link}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                  className="text-xs font-bold text-muted hover:text-foreground underline underline-offset-2 decoration-border hover:decoration-foreground transition-colors"
-                                >
-                                  link
-                                </a>
-                              ) : (
-                                <span className="text-border text-xs">&mdash;</span>
-                              )}
-                              <input
-                                type="checkbox"
-                                checked={item.gfg_done}
-                                onChange={() => handleToggle(item, "gfg_done")}
-                              />
-                            </div>
-                          </td>
-
-                          {/* Code360 */}
-                          <td className="px-4 py-3">
-                            <div className="flex items-center justify-center gap-2">
-                              {item.question.code360_link ? (
-                                <a
-                                  href={item.question.code360_link}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                  className="text-xs font-bold text-muted hover:text-foreground underline underline-offset-2 decoration-border hover:decoration-foreground transition-colors"
-                                >
-                                  link
-                                </a>
-                              ) : (
-                                <span className="text-border text-xs">&mdash;</span>
-                              )}
-                              <input
-                                type="checkbox"
-                                checked={item.code360_done}
-                                onChange={() => handleToggle(item, "code360_done")}
-                              />
-                            </div>
-                          </td>
-
-                          {/* Done */}
-                          <td className="px-4 py-3 text-center">
-                            <input
-                              type="checkbox"
-                              checked={item.done}
-                              onChange={() => handleToggle(item, "done")}
-                            />
-                          </td>
-
-                          {/* Note */}
-                          <td className="px-4 py-3 text-center">
-                            <button
-                              type="button"
-                              className={`px-3 py-1.5 text-xs font-bold rounded-full border-2 transition-all ${
-                                item.note
-                                  ? "border-yellow/40 bg-yellow/10 text-yellow-600 dark:text-yellow hover:border-yellow hover:bg-yellow/20"
-                                  : "border-border hover:border-foreground hover:bg-surface"
-                              }`}
-                              onClick={() => openNoteModal(item)}
-                            >
-                              {item.note ? `${item.note.slice(0, 5)}…` : "Note"}
-                            </button>
-                          </td>
-
-                          {/* Video */}
-                          <td className="px-4 py-3 text-center">
-                            {item.question.tuf_yt_video_link ? (
-                              <a
-                                href={item.question.tuf_yt_video_link}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-danger/10 text-danger hover:bg-danger/20 border-2 border-danger/20 hover:border-danger/40 transition-all"
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  viewBox="0 0 24 24"
-                                  className="w-3.5 h-3.5"
-                                  fill="currentColor"
-                                >
-                                  <path d="M21.8 8.001a3.001 3.001 0 0 0-2.113-2.127C17.733 5.25 12 5.25 12 5.25s-5.733 0-7.687.624A3.001 3.001 0 0 0 2.2 8.001C1.575 9.96 1.575 12 1.575 12s0 2.04.625 3.999a3.001 3.001 0 0 0 2.113 2.127C6.267 18.75 12 18.75 12 18.75s5.733 0 7.687-.624a3.001 3.001 0 0 0 2.113-2.127C22.425 14.04 22.425 12 22.425 12s0-2.04-.625-3.999zM10 15.5V8.5l6 3.5-6 3.5z" />
-                                </svg>
-                              </a>
-                            ) : (
-                              <span className="text-border text-xs">&mdash;</span>
-                            )}
-                          </td>
-
-                          {/* Difficulty */}
-                          <td className="px-4 py-3">
-                            <span
-                              className={`inline-flex px-2.5 py-1 rounded-full border-2 text-[11px] font-bold ${difficultyStyle(
-                                item.question.difficulty,
-                              )}`}
-                            >
-                              {difficultyLabel(item.question.difficulty)}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-                {isLoadingMore && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-background/40 backdrop-blur-[1px]">
-                    <div className="w-8 h-8 border-3 border-border border-t-pink rounded-full animate-spin" />
-                  </div>
-                )}
-              </div>
-
-              {/* Bottom bar */}
-              <div className="border-t-2 border-border bg-surface px-4 py-3 flex items-center justify-between text-xs text-muted">
-                <span>
-                  Showing {visibleItems.length} of {items.length} problems
-                </span>
-                {visibleCount < items.length && (
-                  <button
-                    onClick={loadMore}
-                    className="px-4 py-1.5 bg-foreground text-background rounded-full font-bold hover:opacity-80 transition-opacity text-xs"
+        <div className="max-w-[1400px] mx-auto">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="border-b-2 border-border bg-surface">
+                <tr>
+                  <th className="px-4 sm:px-6 py-3 text-left font-bold text-xs uppercase tracking-wider text-muted w-12">
+                    #
+                  </th>
+                  <th className="px-4 sm:px-6 py-3 text-left font-bold text-xs uppercase tracking-wider text-muted min-w-[240px]">
+                    Problem
+                  </th>
+                  <th className="px-4 py-3 text-center font-bold text-xs uppercase tracking-wider text-muted">
+                    LC
+                  </th>
+                  <th className="px-4 py-3 text-center font-bold text-xs uppercase tracking-wider text-muted">
+                    GFG
+                  </th>
+                  <th className="px-4 py-3 text-center font-bold text-xs uppercase tracking-wider text-muted">
+                    Code360
+                  </th>
+                  <th className="px-4 py-3 text-center font-bold text-xs uppercase tracking-wider text-muted">
+                    Done
+                  </th>
+                  <th className="px-4 py-3 text-center font-bold text-xs uppercase tracking-wider text-muted">
+                    Note
+                  </th>
+                  <th className="px-4 py-3 text-center font-bold text-xs uppercase tracking-wider text-muted">
+                    Video
+                  </th>
+                  <th className="px-4 sm:px-6 py-3 text-left font-bold text-xs uppercase tracking-wider text-muted">
+                    Difficulty
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {visibleItems.map((item, index) => (
+                  <tr
+                    key={item.id}
+                    className={`border-b border-border/40 transition-colors duration-100 hover:bg-surface/50 ${
+                      item.done ? "bg-teal/[0.03]" : ""
+                    }`}
                   >
-                    Load more
-                  </button>
-                )}
-              </div>
-            </div>
+                    <td className="px-4 sm:px-6 py-3.5 text-muted font-mono text-xs">
+                      {index + 1}
+                    </td>
+                    <td className="px-4 sm:px-6 py-3.5">
+                      <button
+                        onClick={() => setDetailItem(item)}
+                        className={`text-left font-semibold transition-colors line-clamp-1 ${
+                          item.done
+                            ? "text-teal line-through decoration-teal/40"
+                            : "text-foreground hover:text-pink"
+                        }`}
+                      >
+                        {item.question.problem_name}
+                      </button>
+                    </td>
+
+                    {/* LC */}
+                    <td className="px-4 py-3.5">
+                      <div className="flex items-center justify-center gap-2">
+                        {item.question.leetcode_link ? (
+                          <a
+                            href={item.question.leetcode_link}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-xs font-bold text-muted hover:text-foreground underline underline-offset-2 decoration-border hover:decoration-foreground transition-colors"
+                          >
+                            link
+                          </a>
+                        ) : (
+                          <span className="text-border text-xs">&mdash;</span>
+                        )}
+                        <input
+                          type="checkbox"
+                          checked={item.leetcode_done}
+                          onChange={() => handleToggle(item, "leetcode_done")}
+                        />
+                      </div>
+                    </td>
+
+                    {/* GFG */}
+                    <td className="px-4 py-3.5">
+                      <div className="flex items-center justify-center gap-2">
+                        {item.question.gfg_link ? (
+                          <a
+                            href={item.question.gfg_link}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-xs font-bold text-muted hover:text-foreground underline underline-offset-2 decoration-border hover:decoration-foreground transition-colors"
+                          >
+                            link
+                          </a>
+                        ) : (
+                          <span className="text-border text-xs">&mdash;</span>
+                        )}
+                        <input
+                          type="checkbox"
+                          checked={item.gfg_done}
+                          onChange={() => handleToggle(item, "gfg_done")}
+                        />
+                      </div>
+                    </td>
+
+                    {/* Code360 */}
+                    <td className="px-4 py-3.5">
+                      <div className="flex items-center justify-center gap-2">
+                        {item.question.code360_link ? (
+                          <a
+                            href={item.question.code360_link}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-xs font-bold text-muted hover:text-foreground underline underline-offset-2 decoration-border hover:decoration-foreground transition-colors"
+                          >
+                            link
+                          </a>
+                        ) : (
+                          <span className="text-border text-xs">&mdash;</span>
+                        )}
+                        <input
+                          type="checkbox"
+                          checked={item.code360_done}
+                          onChange={() => handleToggle(item, "code360_done")}
+                        />
+                      </div>
+                    </td>
+
+                    {/* Done */}
+                    <td className="px-4 py-3.5 text-center">
+                      <input
+                        type="checkbox"
+                        checked={item.done}
+                        onChange={() => handleToggle(item, "done")}
+                      />
+                    </td>
+
+                    {/* Note */}
+                    <td className="px-4 py-3.5 text-center">
+                      <button
+                        type="button"
+                        className={`px-3 py-1.5 text-xs font-bold rounded-full border-2 transition-all ${
+                          item.note
+                            ? "border-yellow/40 bg-yellow/10 text-yellow-600 dark:text-yellow hover:border-yellow hover:bg-yellow/20"
+                            : "border-border hover:border-foreground hover:bg-surface"
+                        }`}
+                        onClick={() => openNoteModal(item)}
+                      >
+                        {item.note ? `${item.note.slice(0, 5)}…` : "Note"}
+                      </button>
+                    </td>
+
+                    {/* Video */}
+                    <td className="px-4 py-3.5 text-center">
+                      {item.question.tuf_yt_video_link ? (
+                        <a
+                          href={item.question.tuf_yt_video_link}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-danger/10 text-danger hover:bg-danger/20 border-2 border-danger/20 hover:border-danger/40 transition-all"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            className="w-3.5 h-3.5"
+                            fill="currentColor"
+                          >
+                            <path d="M21.8 8.001a3.001 3.001 0 0 0-2.113-2.127C17.733 5.25 12 5.25 12 5.25s-5.733 0-7.687.624A3.001 3.001 0 0 0 2.2 8.001C1.575 9.96 1.575 12 1.575 12s0 2.04.625 3.999a3.001 3.001 0 0 0 2.113 2.127C6.267 18.75 12 18.75 12 18.75s5.733 0 7.687-.624a3.001 3.001 0 0 0 2.113-2.127C22.425 14.04 22.425 12 22.425 12s0-2.04-.625-3.999zM10 15.5V8.5l6 3.5-6 3.5z" />
+                          </svg>
+                        </a>
+                      ) : (
+                        <span className="text-border text-xs">&mdash;</span>
+                      )}
+                    </td>
+
+                    {/* Difficulty */}
+                    <td className="px-4 sm:px-6 py-3.5">
+                      <span
+                        className={`inline-flex px-2.5 py-1 rounded-full border-2 text-[11px] font-bold ${difficultyStyle(
+                          item.question.difficulty,
+                        )}`}
+                      >
+                        {difficultyLabel(item.question.difficulty)}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
+
+          {/* Sentinel for infinite scroll */}
+          <div ref={sentinelRef} className="h-1" />
+
+          {isLoadingMore && (
+            <div className="flex justify-center py-8">
+              <div className="w-8 h-8 border-3 border-border border-t-pink rounded-full animate-spin" />
+            </div>
+          )}
+
+          {visibleCount >= items.length && items.length > 0 && (
+            <div className="text-center py-10 text-sm text-muted">
+              All {items.length} problems loaded
+            </div>
+          )}
         </div>
       )}
 
