@@ -48,6 +48,7 @@ export default function SheetPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [noteItem, setNoteItem] = useState<ProgressItem | null>(null);
   const [noteText, setNoteText] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const sentinelRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
@@ -269,14 +270,20 @@ export default function SheetPage() {
     return () => ro.disconnect();
   }, [navHidden]);
 
+  const filteredItems = searchQuery
+    ? items.filter((i) =>
+        i.question.problem_name.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : items;
+
   const loadMore = useCallback(() => {
-    if (isLoadingMore || visibleCount >= items.length) return;
+    if (isLoadingMore || visibleCount >= filteredItems.length) return;
     setIsLoadingMore(true);
     setTimeout(() => {
-      setVisibleCount((current) => Math.min(current + 40, items.length));
+      setVisibleCount((current) => Math.min(current + 40, filteredItems.length));
       setIsLoadingMore(false);
     }, 300);
-  }, [isLoadingMore, visibleCount, items.length]);
+  }, [isLoadingMore, visibleCount, filteredItems.length]);
 
   // Infinite scroll via IntersectionObserver on a sentinel element
   useEffect(() => {
@@ -311,7 +318,7 @@ export default function SheetPage() {
   };
 
   const completedCount = items.filter((i) => i.done).length;
-  const visibleItems = items.slice(0, visibleCount);
+  const visibleItems = filteredItems.slice(0, visibleCount);
 
   return (
     <div className="min-h-screen">
@@ -348,6 +355,49 @@ export default function SheetPage() {
               </div>
             </div>
           )}
+        </div>
+
+        {/* Search bar */}
+        <div className="max-w-[1400px] mx-auto mt-4">
+          <div className="relative flex items-center">
+            <svg
+              className="absolute left-4 w-4 h-4 text-muted pointer-events-none"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2.5}
+                d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"
+              />
+            </svg>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setVisibleCount(40);
+              }}
+              placeholder="Search problems..."
+              className="w-full pl-11 pr-10 py-3 bg-surface border-2 border-border rounded-xl text-foreground placeholder:text-muted/50 focus:outline-none focus:border-foreground transition-colors text-sm font-medium"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchQuery("");
+                  setVisibleCount(40);
+                }}
+                className="absolute right-3 w-6 h-6 flex items-center justify-center rounded-full hover:bg-border/50 transition-colors text-muted hover:text-foreground"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -580,9 +630,11 @@ export default function SheetPage() {
             </div>
           )}
 
-          {visibleCount >= items.length && items.length > 0 && (
+          {visibleCount >= filteredItems.length && filteredItems.length > 0 && (
             <div className="text-center py-10 text-sm text-muted">
-              All {items.length} problems loaded
+              {searchQuery
+                ? `${filteredItems.length} matching problem${filteredItems.length !== 1 ? "s" : ""} found`
+                : `All ${filteredItems.length} problems loaded`}
             </div>
           )}
         </div>
