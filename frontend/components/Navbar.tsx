@@ -18,6 +18,8 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
+  const [navHidden, setNavHidden] = useState(false);
+  const lastScrollY = useRef(0);
 
   // Re-check auth on every route change so login/signup redirects update the navbar
   useEffect(() => {
@@ -42,6 +44,24 @@ export default function Navbar() {
     setMobileOpen(false);
     setProfileOpen(false);
   }, [pathname]);
+
+  // Hide navbar on scroll down, show on scroll up
+  useEffect(() => {
+    const threshold = 10;
+    const handleScroll = () => {
+      const currentY = window.scrollY;
+      if (currentY > lastScrollY.current + threshold && currentY > 64) {
+        setNavHidden(true);
+        setProfileOpen(false);
+        setMobileOpen(false);
+      } else if (currentY < lastScrollY.current - threshold) {
+        setNavHidden(false);
+      }
+      lastScrollY.current = currentY;
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Close profile dropdown when clicking outside
   useEffect(() => {
@@ -71,7 +91,7 @@ export default function Navbar() {
   const userName = user?.first_name ?? 'User';
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-40">
+    <header className={`fixed top-0 left-0 right-0 z-40 transition-transform duration-300 ${navHidden ? '-translate-y-full' : 'translate-y-0'}`}>
       <nav className="bg-background/90 backdrop-blur-md border-b-2 border-foreground/10">
         <div className="max-w-[1400px] mx-auto px-6 lg:px-8 h-16 flex items-center justify-between">
           {/* Logo */}

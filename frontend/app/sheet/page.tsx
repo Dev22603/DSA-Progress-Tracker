@@ -52,6 +52,8 @@ export default function SheetPage() {
   const sentinelRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const [theadTop, setTheadTop] = useState(64); // 64px = navbar h-16
+  const [navHidden, setNavHidden] = useState(false);
+  const lastScrollY = useRef(0);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -237,18 +239,35 @@ export default function SheetPage() {
     setNoteText("");
   };
 
+  // Hide/show synced with navbar scroll behavior
+  useEffect(() => {
+    const threshold = 10;
+    const handleScroll = () => {
+      const currentY = window.scrollY;
+      if (currentY > lastScrollY.current + threshold && currentY > 64) {
+        setNavHidden(true);
+      } else if (currentY < lastScrollY.current - threshold) {
+        setNavHidden(false);
+      }
+      lastScrollY.current = currentY;
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   // Measure sticky header height so thead sticks right below it
   useEffect(() => {
     const el = headerRef.current;
     if (!el) return;
 
-    const update = () => setTheadTop(64 + el.offsetHeight);
+    const navOffset = navHidden ? 0 : 64;
+    const update = () => setTheadTop(navOffset + el.offsetHeight);
     update();
 
     const ro = new ResizeObserver(update);
     ro.observe(el);
     return () => ro.disconnect();
-  }, []);
+  }, [navHidden]);
 
   const loadMore = useCallback(() => {
     if (isLoadingMore || visibleCount >= items.length) return;
@@ -297,7 +316,7 @@ export default function SheetPage() {
   return (
     <div className="min-h-screen">
       {/* Sticky header — pinned below navbar */}
-      <div ref={headerRef} className="sticky top-16 z-30 bg-background/95 backdrop-blur-md border-b-2 border-border px-6 lg:px-8 py-5">
+      <div ref={headerRef} className={`sticky z-30 bg-background/95 backdrop-blur-md border-b-2 border-border px-6 lg:px-8 py-5 transition-[top] duration-300 ${navHidden ? 'top-0' : 'top-16'}`}>
         <div className="max-w-[1400px] mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-3xl sm:text-4xl font-black tracking-tight mb-1">
@@ -365,7 +384,7 @@ export default function SheetPage() {
         <div className="max-w-[1400px] mx-auto">
           <div className="overflow-x-clip">
             <table className="w-full text-sm">
-              <thead className="border-b-2 border-border bg-surface sticky z-20" style={{ top: `${theadTop}px` }}>
+              <thead className="border-b-2 border-border bg-surface sticky z-20 transition-[top] duration-300" style={{ top: `${theadTop}px` }}>
                 <tr>
                   <th className="px-4 sm:px-6 py-3 text-left font-bold text-xs uppercase tracking-wider text-muted w-12">
                     #
