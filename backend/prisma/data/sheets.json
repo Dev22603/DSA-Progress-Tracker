@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "name": "A2Z Sheet",
+    "number_of_questions": 455,
+    "has_sub_steps": true
+  },
+  {
+    "id": 2,
+    "name": "SDE Sheet",
+    "number_of_questions": 150,
+    "has_sub_steps": false
+  },
+  {
+    "id": 3,
+    "name": "Striver 79",
+    "number_of_questions": 79,
+    "has_sub_steps": false
+  },
+  {
+    "id": 4,
+    "name": "Blind 75",
+    "number_of_questions": 75,
+    "has_sub_steps": false
+  }
+]

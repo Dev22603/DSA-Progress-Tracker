@@ -3,5 +3,5 @@ node_modules
 .env
 
 /generated/prisma
-prisma/data/*.json
-data/*.json
+# prisma/data/*.json
+# data/*.json
