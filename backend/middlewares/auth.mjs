@@ -15,7 +15,8 @@ export const authenticate = (req, res, next) => {
 
         next();
     } catch (err) {
-        res.status(400).json({ error: "Invalid token", err });
+        console.error("JWT Verification Error:", err);
+        res.status(400).json({ error: "Invalid token" });
     }
 };
 
