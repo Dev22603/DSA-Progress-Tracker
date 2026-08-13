@@ -2,7 +2,7 @@
 
 This directory contains JSON files used to seed the database with initial data.
 
-**Note:** The JSON data files are ignored by git (see `backend/.gitignore`). Sample files are created locally but you should populate them with your actual data.
+**Note:** These JSON data files are tracked in git and contain the actual seed data used by `npm run prisma:seed`.
 
 ## Files
 
@@ -65,4 +65,3 @@ npm run prisma:migrate
 
 - The seed file uses `upsert` operations, so it's safe to run multiple times
 - Foreign key relationships are maintained (questions and sheets must exist before sheet_questions)
-- Replace the sample data with your actual DSA problems and sheets

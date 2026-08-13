@@ -26,15 +26,12 @@ DATABASE_URL=postgresql://postgres:root@localhost:5432/DSA-Tracker
 
 ## 3) Start PostgreSQL via Docker
 ```bash
-# From backend/
-docker compose up -d
-# or (older docker versions)
-docker-compose up -d
+# From the repo root
+docker compose up -d postgres
 ```
-This launches a Postgres 16 instance named `dsa_tracker_db` (see `docker-compose.yml`).
+This launches a Postgres 16 instance named `dsa_tracker_db` (see `../docker-compose.yml`). Running `docker compose up --build` from the repo root instead starts the full stack (Postgres + backend + frontend) — see the root README.
 
 ## 4) Prisma
-The Prisma Client is generated to `backend/generated/prisma` (see `prisma/schema.prisma` generator output).
 
 - Generate client (run this whenever the schema changes):
 ```bash
@@ -70,8 +67,8 @@ This runs `nodemon index.mjs`.
 
 ## File pointers
 - Prisma schema: `prisma/schema.prisma`
-- Prisma client singleton: `prisma/client.js` (imports from `../generated/prisma`)
-- DB Compose: `docker-compose.yml`
+- Prisma client singleton: `prisma/client.mjs` (imports directly from `@prisma/client`)
+- DB Compose: `../docker-compose.yml` (repo root)
 - Sample env: `sample.env`
 
 ## Troubleshooting

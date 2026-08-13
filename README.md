@@ -75,16 +75,19 @@ npm run dev                 # runs on http://localhost:3000
 
 ## API Endpoints
 
-| Method | Endpoint                    | Auth     | Description              |
-|--------|-----------------------------|----------|--------------------------|
-| POST   | `/api/auth/signup`          | Public   | Register new user        |
-| POST   | `/api/auth/login`           | Public   | Login                    |
-| GET    | `/api/problems`             | Public   | Get all problems         |
-| GET    | `/api/user/progress`        | Protected| Get user progress        |
-| POST   | `/api/problems/:id/complete`| Protected| Mark problem as done     |
-| GET    | `/api/user/profile`         | Protected| Get user profile         |
-| PUT    | `/api/user/profile`         | Protected| Update user profile      |
-| DELETE | `/api/user/profile`         | Protected| Delete account           |
+See [`backend/API-REFERENCE.md`](backend/API-REFERENCE.md) for full request/response details.
+
+| Method | Endpoint                  | Auth      | Description                        |
+|--------|----------------------------|-----------|-------------------------------------|
+| POST   | `/api/auth/signup`         | Public    | Register new user                   |
+| POST   | `/api/auth/login`          | Public    | Login                                |
+| GET    | `/api/users`                | Admin     | List all users                      |
+| DELETE | `/api/users`                | Protected | Delete own account                  |
+| GET    | `/api/sheet_questions`      | Public    | Get questions for a sheet           |
+| GET    | `/api/complete_progress`    | Protected | Get all progress for the user       |
+| GET    | `/api/sheet_progress`       | Protected | Get progress for a specific sheet   |
+| POST   | `/api/toggle_question`      | Protected | Toggle a question's done state      |
+| POST   | `/api/toggle_question_site` | Protected | Toggle done state for a site link   |
 
 ## Contributing
 

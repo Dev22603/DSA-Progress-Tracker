@@ -133,8 +133,6 @@ const createEmptyUserProgress = async (userId) => {
 			},
 		});
 	}
-	console.log("Empty Progress created for user: ", userId);
-
 };
 const deleteUser = async (id) => {
 	try {

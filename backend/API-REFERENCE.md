@@ -4,7 +4,7 @@ Base URL: `http://localhost:5000/api`
 
 Auth: JWT via `Authorization: Bearer <token>` header where required.
 
-CORS: Allowed origin `http://localhost:5173`.
+CORS: Allowed origin `http://localhost:3000`.
 
 ---
 

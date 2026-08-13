@@ -231,7 +231,7 @@ After seeding, both the `pg.Pool` and the Prisma client are explicitly disconnec
 
 ## 7. Repository Layer
 
-All Prisma queries are isolated in repository files under `backend/repositories/`.
+All Prisma queries are isolated in repository files under `backend/repository/`.
 
 ### 7.1 `progress.repository.mjs`
 
